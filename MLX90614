@@ -1,19 +1,30 @@
 #include <Wire.h>
 #include <Adafruit_MLX90614.h>
+#include <SimpleKalmanFilter.h>
 
+
+// Initialize the Kalman Filter
+SimpleKalmanFilter kf(2, 2, 0.01);
+
+// Initialize the MLX90614 sensor
 Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 
 void setup() {
   Serial.begin(9600);
-
-  Serial.println("Adafruit MLX90614 test");  
-
-  mlx.begin();  
+  mlx.begin(); // Initialize the MLX90614 sensor
 }
 
 void loop() {
-Serial.print(mlx.readAmbientTempC()); 
-Serial.print(",");
-Serial.println(mlx.readObjectTempC());
-  delay(2000);
+  // Read the temperature value from the sensor
+  float temp = mlx.readObjectTempC();
+
+  // Filter the temperature value using Kalman Filter
+  float filteredTemp = kf.updateEstimate(temp);
+
+  Serial.print(temp, 2);
+  Serial.print(",");
+  Serial.print(filteredTemp, 2);
+  Serial.println();
+
+  delay(100); // Wait for 1 seconds before reading the next value
 }
