@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import t
+
+# Đọc dữ liệu từ tệp Excel và chuyển nó thành mảng numpy
+df = pd.read_excel('/content/mlx2.xlsx', usecols=[0])
+data = df.to_numpy().flatten()
+
+# Tính toán các thông số của phân phối Gauss
+mean = np.mean(data)
+std = np.std(data)
+
+# Số lượng quan sát và độ tự do
+n = len(data)
+df = n - 1
+
+# Tính giá trị của đỉnh phân phối Gauss
+peak = 1/(std * np.sqrt(2 * np.pi))
+
+# Vẽ đồ thị Gauss
+x = np.linspace(mean - 3*std, mean + 3*std, 100)
+y = peak * np.exp(-(x - mean)**2 / (2 * std**2))
+plt.plot(x, y)
+# In ra giá trị Variance
+variance = np.var(data_array)
+
+print("Mean:", mean)
+print("Std:", std)
+print("Variance:", variance)
+
+# Tính confidence interval với các mức tin cậy khác nhau
+ci90 = t.interval(0.9, df, loc=mean, scale=std / np.sqrt(n))
+ci95 = t.interval(0.95, df, loc=mean, scale=std / np.sqrt(n))
+ci99 = t.interval(0.99, df, loc=mean, scale=std / np.sqrt(n))
+ci9999 = t.interval(0.9999, df, loc=mean, scale=std / np.sqrt(n))
+
+# In kết quả
+print("90% confidence interval:", ci90)
+print("95% confidence interval:", ci95)
+print("99% confidence interval:", ci99)
+print("99.99% confidence interval:", ci9999)
+
+# Hiển thị giá trị của đỉnh trên đồ thị
+plt.text(mean, peak, f'Peak: {peak:.3f}', ha='center', va='bottom')
+plt.title('Normal Distribution')
+plt.xlabel('Value')
+plt.ylabel('Density')
+plt.show()
